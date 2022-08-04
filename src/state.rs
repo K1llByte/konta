@@ -1,33 +1,28 @@
-use std::path::Path;
 use std::io;
-
+use std::path::Path;
 
 pub struct AppState {
     pub focused: FocusedWindow,
     pub data: Data,
 }
 
-
 pub enum FocusedWindow {
     Items(usize),
     People(usize),
-    OwnerSelector(usize,usize,Vec<usize>),
+    OwnerSelector(usize, usize, Vec<usize>),
     RestOwnerSelector(usize),
     AddPerson(String),
 }
-
 
 pub struct Data {
     pub items: Vec<Item>,
     pub people: Vec<String>,
 }
 
-
 pub struct Owner {
     pub person: usize,
     pub percentage: f32,
 }
-
 
 pub struct Item {
     pub description: String,
@@ -36,31 +31,25 @@ pub struct Item {
     pub owners: Vec<Owner>,
 }
 
-
 impl Default for AppState {
     fn default() -> Self {
-        let item1 = Item{
+        let item1 = Item {
             description: "Iogurte Grego Natural Açucarado".into(),
             quantity: 2,
             price: 2.48,
             owners: Vec::new(),
         };
-        let item2 = Item{
+        let item2 = Item {
             description: "Iogurte Grego Natural Açucarado".into(),
             quantity: 1,
             price: 1.24,
             owners: Vec::new(),
         };
-        AppState{
+        AppState {
             focused: FocusedWindow::Items(0),
             data: Data {
-                items: vec![
-                    item1,
-                    item2,
-                ],
-                people: vec![
-                    "jojo".into(),
-                ]
+                items: vec![item1, item2],
+                people: vec!["jojo".into()],
             },
         }
     }
@@ -77,7 +66,7 @@ impl AppState {
 
 impl Data {
     pub fn set_item_owner(&mut self, item_idx: usize, person_idx: usize) {
-        let owner = Owner{
+        let owner = Owner {
             person: person_idx,
             percentage: 1.0,
         };
@@ -86,8 +75,7 @@ impl Data {
         // Special case to avoid reallocation
         if size == 1 {
             self.items[item_idx].owners[0] = owner;
-        }
-        else {
+        } else {
             self.items[item_idx].owners = vec![owner];
         }
     }
@@ -99,12 +87,10 @@ impl Data {
     pub fn set_rest_items_owner(&mut self, person_idx: usize) {
         for item in &mut self.items {
             if item.owners.is_empty() {
-                item.owners.push(
-                    Owner{
-                        person: person_idx,
-                        percentage: 1.0,
-                    }
-                )
+                item.owners.push(Owner {
+                    person: person_idx,
+                    percentage: 1.0,
+                })
             }
         }
     }
@@ -116,7 +102,7 @@ impl Data {
         }
         for (i, item) in self.items.iter().enumerate() {
             for owner in &item.owners {
-                totals[owner.person] += owner.percentage*item.price;
+                totals[owner.person] += owner.percentage * item.price;
             }
         }
         totals
@@ -124,10 +110,10 @@ impl Data {
 
     pub fn load<P: AsRef<Path>>(filename: P) -> io::Result<Self> {
         let mut items = Vec::<Item>::with_capacity(20);
-        
+
         use regex::Regex;
-        use std::io::BufRead;
         use std::fs::File;
+        use std::io::BufRead;
         let file = File::open(filename)?;
         let mut parser_state: u8 = 0;
         // 0: Have to read description next
@@ -135,7 +121,7 @@ impl Data {
         // 2: Have to read discount next
         // 3: Have to read price next
 
-        let mut current_item = Item{
+        let mut current_item = Item {
             description: String::from(""),
             quantity: 0,
             price: 0.0,
@@ -151,39 +137,36 @@ impl Data {
                         current_item.description = capture.get(1).unwrap().as_str().to_string();
                         parser_state = 1;
                     }
-                    
-                },
+                }
                 1 => {
-                    
                     // 1. Item quantity (capture)
                     let re = Regex::new(r"[ ]{4}(\d+).*").unwrap();
                     if let Some(capture) = re.captures(&line) {
-                        current_item.quantity = capture.get(1).unwrap().as_str().parse::<u32>().unwrap();
+                        current_item.quantity =
+                            capture.get(1).unwrap().as_str().parse::<u32>().unwrap();
                         parser_state = 2;
-                    }
-                    else {
+                    } else {
                         parser_state = 0;
                     }
-                },
+                }
                 2 => {
-                    
                     // 2. Item discount (match only)
                     let re = Regex::new(r"[ ]{4}-?\d+,\d+.*").unwrap();
                     if re.is_match(&line) {
                         parser_state = 3;
                     }
-                },
+                }
                 3 => {
                     // 3. Item price (capture)
                     let re = Regex::new(r"[ ]{4}(\d+),(\d+).*").unwrap();
                     if let Some(capture) = re.captures(&line) {
-                        // 
+                        //
                         let a = capture.get(1).unwrap().as_str().parse::<u32>().unwrap();
                         let b = capture.get(2).unwrap().as_str().parse::<u32>().unwrap();
-                        current_item.price = (a as f32) + ((b as f32)*0.01f32);
+                        current_item.price = (a as f32) + ((b as f32) * 0.01f32);
                         if current_item.price != 0.0 {
                             items.push(current_item);
-                            current_item = Item{
+                            current_item = Item {
                                 description: String::from(""),
                                 quantity: 0,
                                 price: 0.0,
@@ -192,7 +175,7 @@ impl Data {
                         }
                     }
                     parser_state = 0;
-                },
+                }
                 _ => panic!("Unexpected data parser state"),
             }
         }
@@ -207,7 +190,7 @@ pub fn from_indices_to_owners(people: &Vec<usize>) -> Vec<Owner> {
     let mut owners = Vec::with_capacity(people.len());
     let percentage = 1f32 / (people.len() as f32);
     for person in people {
-        owners.push(Owner{
+        owners.push(Owner {
             person: *person,
             percentage,
         });
@@ -223,8 +206,7 @@ pub fn flatten_owners(owners: &mut Vec<Owner>) {
         if a.person == b.person {
             b.percentage += a.percentage;
             true
-        }
-        else {
+        } else {
             false
         }
     });
@@ -254,9 +236,7 @@ pub fn person_color(person: usize) -> Color {
     ];
     if person < 14 {
         VEC_COLORS[person]
-    }
-    else {
+    } else {
         Color::Reset
     }
-    
 }

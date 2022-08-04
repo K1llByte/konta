@@ -32,6 +32,14 @@ use input_handlers::*;
 
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use std::env;
+    use std::path::Path;
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 || !Path::new(&args[1]).exists() {
+        eprintln!("Error: missing argument <file>");
+        return Ok(());
+    }
+
     // 1. Setup input Receiver thread
     let (tx, rx) = mpsc::channel();
     let tick_rate = Duration::from_millis(200);
@@ -69,7 +77,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // App state
     // let mut app = AppState::default();
-    let mut app = AppState::with_data(Data::load("sample.txt")?);
+    let mut app = AppState::with_data(Data::load(&args[1])?);
     
     loop {
         // Draw
