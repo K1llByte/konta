@@ -2,10 +2,10 @@ use tui::{
     Frame,
     backend::Backend,
     layout::{
-        Constraint, Direction, Layout
+        Constraint, Direction, Layout, Alignment
     },
     widgets::{
-        Block, Borders,
+        Block, Borders, Wrap, Paragraph,
         Cell, Row, Table, TableState, BorderType, List, ListItem
     },
     style::{
@@ -26,6 +26,21 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         // .margin(1)
         .constraints([Constraint::Percentage(80), Constraint::Percentage(20)].as_ref())
         .split(f.size());
+
+    
+    let side_chunks = if let FocusedWindow::AddPerson(_) = app.focused {
+        Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Percentage(20), Constraint::Percentage(85)].as_ref())
+            .split(chunks[1])
+    }
+    else {
+        Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Percentage(0), Constraint::Percentage(100)].as_ref())
+            .split(chunks[1])
+    };
+    
 
     
     /////////////// Render people table /////////////
@@ -158,14 +173,47 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         Constraint::Percentage(15),
         Constraint::Percentage(15),
     ]);
+
+    /////////////// Render add person prompt ///////////////
+    
+    let new_person_name = if let FocusedWindow::AddPerson(name) = &app.focused {
+        name.as_ref()
+    }
+    else {
+        // This will never be rendered
+        ""
+    };
+
+    let add_person_prompt = Paragraph::new(new_person_name.as_ref())
+        .block(Block::default()
+            .borders(Borders::ALL)
+            .title("New Person")
+            .border_type(BorderType::Thick)
+        )
+        // .alignment(Alignment::Center)
+        .wrap(Wrap { trim: true });
+    
     ////////////////////////////////////////////////
 
+    // Widgets state updates
     let mut items_state = TableState::default();
+    let mut people_state = TableState::default();
     match app.focused {
-        FocusedWindow::Items(idx) | FocusedWindow::OwnerSelector(idx,_) => items_state.select(Some(idx)),
+        FocusedWindow::Items(idx) => {
+            items_state.select(Some(idx));
+        },
+        FocusedWindow::OwnerSelector(item_idx, person_idx) => {
+            items_state.select(Some(item_idx));
+            people_state.select(Some(person_idx));
+        },
+        FocusedWindow::People(idx) => {
+            people_state.select(Some(idx));
+        },
         _ => {},
     };
     f.render_stateful_widget(items_table, chunks[0], &mut items_state);
-    // f.render_widget(items_table, chunks[0]);
-    f.render_widget(people_list, chunks[1]);
+    f.render_stateful_widget(people_list, side_chunks[1], &mut people_state);
+    f.render_widget(add_person_prompt, side_chunks[0]);
+
+    // f.render_widget(people_list, chunks[1]);
 }

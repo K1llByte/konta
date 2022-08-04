@@ -1,4 +1,4 @@
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::state::*;
 
@@ -27,8 +27,15 @@ pub fn items_input_handler(input: &Event, app: &mut AppState) -> bool {
                 // KeyCode::Tab => {
                 //     app.focused = FocusedWindow::People(0);
                 // },
+                // Select Owner of this item purchase
                 KeyCode::Enter => {
                     app.focused = FocusedWindow::OwnerSelector(*idx,0);
+                }
+                // Add a new person
+                KeyCode::Char('a') | KeyCode::Char('A') => {
+                    // TODO:
+                    // Change Focused window to AddPerson
+                    app.focused = FocusedWindow::AddPerson(String::with_capacity(30));
                 }
                 _ => {}
             },
@@ -46,7 +53,7 @@ pub fn people_input_handler(event: &Event, app: &mut AppState) -> bool {
                     return true;
                 }
                 KeyCode::Down | KeyCode::Char('j') => {
-                    if *idx < app.data.people.len() - 1 {
+                    if app.data.people.len() > 0 && *idx < app.data.people.len() - 1 {
                         *idx += 1;
                     }
                 }
@@ -75,7 +82,7 @@ pub fn owner_selector_input_handler(event: &Event, app: &mut AppState) -> bool {
                     return true;
                 }
                 KeyCode::Down | KeyCode::Char('j') | KeyCode::Char('J') => {
-                    if *person_idx < app.data.people.len() - 1 {
+                    if app.data.people.len() > 0 && *person_idx < app.data.people.len() - 1 {
                         *person_idx += 1;
                     }
                 }
@@ -85,11 +92,48 @@ pub fn owner_selector_input_handler(event: &Event, app: &mut AppState) -> bool {
                     }
                 }
                 KeyCode::Enter => {
-                    app.data.set_item_owner(*item_idx, Some(*person_idx));
+                    if *person_idx < app.data.people.len() {
+                        app.data.set_item_owner(*item_idx, Some(*person_idx));
+                    }
                     app.focused = FocusedWindow::Items(*item_idx);
                 }
                 KeyCode::Esc => {
                     app.focused = FocusedWindow::Items(*item_idx);
+                }
+                _ => {}
+            },
+            Event::Tick => {}
+        }
+    }
+    return false;
+}
+
+pub fn add_person_input_handler(event: &Event, app: &mut AppState) -> bool {
+    if let FocusedWindow::AddPerson(name) = &mut app.focused {
+        match event {
+            Event::Input(event) => match event.code {
+                KeyCode::Char(c) => {
+                    name.push(c);
+                }
+                KeyCode::Backspace => {
+                    use substring::Substring;
+                    if name.len() > 0 {
+                        if event.modifiers.contains(KeyModifiers::CONTROL) {
+                            name.clear();
+                        }
+                        else {
+                            *name = String::from(name.substring(0, name.len()-1))
+                        }
+                    }
+                }
+                KeyCode::Enter => {
+                    // if name.len() > 0 {
+                        app.data.people.push(name.clone());
+                        app.focused = FocusedWindow::Items(0);
+                    // }
+                }
+                KeyCode::Esc => {
+                    app.focused = FocusedWindow::Items(0);
                 }
                 _ => {}
             },

@@ -7,6 +7,7 @@ pub enum FocusedWindow {
     Items(usize),
     People(usize),
     OwnerSelector(usize,usize),
+    AddPerson(String),
 }
 
 pub struct Data {
@@ -62,8 +63,8 @@ impl Default for AppState {
                     item2.clone(),
                 ],
                 people: vec![
-                    "jojo".into(),
-                    "bu".into(),
+                    // "jojo".into(),
+                    // "bu".into(),
                 ]
             },
         }
