@@ -6,7 +6,7 @@ use tui::{
     },
     widgets::{
         Block, Borders,
-        Cell, Row, Table, BorderType, List, ListItem
+        Cell, Row, Table, TableState, BorderType, List, ListItem
     },
     style::{
         Color, Modifier, Style
@@ -28,7 +28,9 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         .split(f.size());
 
     
-    /////////////// Render people list /////////////
+    /////////////// Render people table /////////////
+
+    let totals = app.data.compute_total();
 
     let mut people_rows = Vec::with_capacity(app.data.people.len());
     for (i,person) in app.data.people.iter().enumerate() {
@@ -36,29 +38,40 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         let row = match app.focused {
             // Selected
             FocusedWindow::People(idx) | FocusedWindow::OwnerSelector(_,idx) if i == idx => 
-                ListItem::new(person.as_ref())
-                    .style(Style::default().bg(Color::White).fg(Color::Black)),
+                Row::new(vec![
+                    Cell::from(person.as_ref()),
+                    Cell::from(totals[i].to_string()),
+                ])
+                .style(Style::default().bg(Color::White).fg(Color::Black)),
             // Normal
-            _ => ListItem::new(person.as_ref()).style(Style::default().bg(person_color(i))/* .fg(Color::Black) */),
+            _ => 
+                Row::new(vec![
+                    Cell::from(person.as_ref()),
+                    Cell::from(totals[i].to_string()),
+                ])
+                .style(Style::default().bg(person_color(i))/* .fg(Color::Black) */),
         };
         people_rows.push(row);
     }
     
     // Create List and customize layout
-    let people_list = List::new(people_rows)
+    let people_list = Table::new(people_rows)
         .block(
-            if let FocusedWindow::People(_) = app.focused {
-                Block::default()
+            match app.focused {
+                FocusedWindow::OwnerSelector(_,_) | FocusedWindow::People(_) =>
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .title("People")
+                        .border_type(BorderType::Thick),
+                _ => Block::default()
                     .borders(Borders::ALL)
-                    .title("People")
-                    .border_type(BorderType::Thick)
+                    .title("People"),
             }
-            else {
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title("People")
-            }
-        );
+        )
+        .widths(&[
+            Constraint::Percentage(60),
+            Constraint::Percentage(40),
+        ]);
 
     /////////////// Render items table /////////////
     let mut item_rows = Vec::with_capacity(app.data.items.len());
@@ -147,6 +160,12 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
     ]);
     ////////////////////////////////////////////////
 
-    f.render_widget(items_table, chunks[0]);
+    let mut items_state = TableState::default();
+    match app.focused {
+        FocusedWindow::Items(idx) | FocusedWindow::OwnerSelector(idx,_) => items_state.select(Some(idx)),
+        _ => {},
+    };
+    f.render_stateful_widget(items_table, chunks[0], &mut items_state);
+    // f.render_widget(items_table, chunks[0]);
     f.render_widget(people_list, chunks[1]);
 }

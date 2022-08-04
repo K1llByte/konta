@@ -14,6 +14,7 @@ pub struct Data {
     pub people: Vec<String>,
 }
 
+#[derive(Clone)]
 pub struct Item {
     pub description: String,
     pub quantity: u32,
@@ -23,28 +24,42 @@ pub struct Item {
 
 impl Default for AppState {
     fn default() -> Self {
+        let item1 = Item{
+            description: "Iogurte Grego Natural Açucarado".into(),
+            quantity: 2,
+            price: 2.48,
+            owner: None,
+        };
+        let item2 = Item{
+            description: "Iogurte Grego Natural Açucarado".into(),
+            quantity: 1,
+            price: 1.24,
+            owner: None,
+        };
         AppState{
             focused: FocusedWindow::Items(0),
             data: Data {
                 items: vec![
-                    Item{
-                        description: "Iogurte Grego Natural Açucarado".into(),
-                        quantity: 2,
-                        price: 2.48,
-                        owner: None,
-                    },
-                    Item{
-                        description: "Iogurte Grego Natural Açucarado".into(),
-                        quantity: 2,
-                        price: 2.48,
-                        owner: None,
-                    },
-                    Item{
-                        description: "Iogurte Grego Natural Açucarado".into(),
-                        quantity: 2,
-                        price: 2.48,
-                        owner: Some(0),
-                    },
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
+                    item1.clone(),
+                    item2.clone(),
                 ],
                 people: vec![
                     "jojo".into(),
@@ -58,6 +73,19 @@ impl Default for AppState {
 impl Data {
     pub fn set_item_owner(&mut self, item_idx: usize, opt_person_idx: Option<usize>) {
         self.items[item_idx].owner = opt_person_idx;
+    }
+
+    pub fn compute_total(&self) -> Vec<f32> {
+        let mut totals = Vec::with_capacity(self.people.len());
+        for _ in 0..self.people.len() {
+            totals.push(0f32);
+        }
+        for (i, item) in self.items.iter().enumerate() {
+            if let Some(owner_idx) = item.owner {
+                totals[owner_idx] += item.price
+            }
+        }
+        totals
     }
 }
 
