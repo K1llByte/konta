@@ -1,16 +1,4 @@
- Substituição #1
-
-    Creme de Cenoura
-    1
-    0,00 €
-    2,49 €
-
-    Creme de Legumes
-    1
-    0,00 €
-    2,49 € 
-
-Frigorífico
+ Frigorífico
 
     Iogurte Grego Natural Açucarado Pingo Doce - Pack 4
     2
@@ -20,111 +8,87 @@ Frigorífico
     Queijo Flamengo Fatiado Terra Nostra
     1
     0,00 €
-    4,39 €
-
-    Tortellini Bolonhesa Rana
-    1
-    0,00 €
-    3,29 €
+    2,35 €
 
     Ravioli de Frango Assado com Alecrim Rana
     1
     0,00 €
-    3,29 € 
+    3,29 €
 
-Leite, Ovos e Natas
-
-    Leite UHT Magro Bem Essencial Mimosa
-    12
+    Tortellini Bolonhesa Rana
+    2
     0,00 €
-    9,24 € 
+    6,58 € 
 
-Padaria e Pastelaria
+Take Away
 
-    Pão de Forma Branco Panrico
-    1
+    Creme de Cenoura
+    3
     0,00 €
-    1,89 € 
+    7,47 € 
 
 Frutas e Legumes
 
     Banana Importada - Unidade 0.2 Kg
-    1.91 Kg
+    1.83 Kg
     0,00 €
-    2,08 € 
+    1,99 € 
 
 Mercearia
 
     Atum Posta em Azeite Minerva
     4
     -4,40 €
-    4,36 € 
+    4,36 €
+
+    Massa Esparguete Nacional
+    2
+    -0,80 €
+    2,38 € 
 
 As Nossas Marcas
 
     Ovos de Solo Classe L Pingo Doce
     1
     0,00 €
-    2,39 €
-
-    Garrafão de Água Pingo Doce
-    3
-    0,00 €
-    2,25 €
-
-    Papel Higiénico Folha Dupla Ecolabel Pingo Doce - 32 rolos
-    1
-    0,00 €
-    5,99 €
-
-    Água Pingo Doce
-    2
-    0,00 €
-    0,50 € 
-
-Animais
-
-    Ração Húmida para Gato Sabor Salmão Gold Gourmet
-    1
-    0,00 €
-    0,75 € 
+    2,39 € 
 
 Alternativas Alimentares
 
-    Iogurte Magro Pedaços Mirtilo Pingo Doce (min. 4)
-    4
+    Bolachas Tradicionais Integrais Cem Porcento
+    1
     0,00 €
-    1,44 € 
+    1,99 € 
+
+Congelados
+
+    Filetes de Pescada com Ervas Panados Pescanova
+    1
+    -1,10 €
+    4,39 €
+
+    Hambúrgueres de Frango sem Glúten Pescanova
+    1
+    -7,10 €
+    4,59 € 
 
 Higiene e Beleza
 
-    Sabonete Sólido Nivea
+    Desodorizante Roll-On Derma Vaseline
     1
     0,00 €
-    0,99 € 
+    3,49 € 
 
-Take Away
+Casa
 
-    Sandes de Frango Good4Me
-    0
-    0,00 €
-    0,00 €
-
-    Sandes de Atum Good4Me
-    0
-    0,00 €
-    0,00 € 
-
-Bebidas
-
-    Água Pingo Doce
+    Vassoura Colour Pluma Fapil
     1
     0,00 €
-    0,16 € 
+    3,19 € 
 
 Embalamento
 
     Saco de Plástico Reciclado 85%
-    5
+    3
     0,00 €
-    0,50 € 
+    0,30 € 

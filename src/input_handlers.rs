@@ -1,4 +1,4 @@
-use crossterm::event::{KeyCode, KeyEvent};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::state::*;
 
@@ -27,7 +27,7 @@ pub fn items_input_handler(input: &Event, app: &mut AppState) -> bool {
                 // Select Owner of this item purchase
                 KeyCode::Enter => {
                     if app.data.items.len() > 0 {
-                        app.focused = FocusedWindow::OwnerSelector(*idx,0);
+                        app.focused = FocusedWindow::OwnerSelector(*idx,0,vec![]);
                     }
                 }
                 // Set Owner for all unowned items
@@ -79,7 +79,7 @@ pub fn people_input_handler(event: &Event, app: &mut AppState) -> bool {
 
 
 pub fn owner_selector_input_handler(event: &Event, app: &mut AppState) -> bool {
-    if let FocusedWindow::OwnerSelector(item_idx, person_idx) = &mut app.focused {
+    if let FocusedWindow::OwnerSelector(item_idx, person_idx, owners_indices) = &mut app.focused {
         match event {
             Event::Input(event) => match event.code {
                 KeyCode::Char('q') | KeyCode::Char('Q') => {
@@ -97,9 +97,15 @@ pub fn owner_selector_input_handler(event: &Event, app: &mut AppState) -> bool {
                 }
                 KeyCode::Enter => {
                     if *person_idx < app.data.people.len() {
-                        app.data.set_item_owner(*item_idx, Some(*person_idx));
+                        owners_indices.push(*person_idx);
+                        app.data.set_item_owners(*item_idx, from_indices_to_owners(&owners_indices));
                     }
                     app.focused = FocusedWindow::Items(*item_idx);
+                }
+                KeyCode::Char('p') | KeyCode::Char('P') => {
+                    if *person_idx < app.data.people.len() {
+                        owners_indices.push(*person_idx);
+                    }
                 }
                 KeyCode::Esc => {
                     app.focused = FocusedWindow::Items(*item_idx);
@@ -131,7 +137,7 @@ pub fn rest_owner_selector_input_handler(event: &Event, app: &mut AppState) -> b
                 }
                 KeyCode::Enter => {
                     if *person_idx < app.data.people.len() {
-                        app.data.set_rest_items_owner(Some(*person_idx));
+                        app.data.set_rest_items_owner(*person_idx);
                     }
                     app.focused = FocusedWindow::Items(0);
                 }

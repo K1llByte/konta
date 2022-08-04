@@ -84,7 +84,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let exit = match app.focused {
             FocusedWindow::Items(_) => items_input_handler(&input, &mut app),
             FocusedWindow::People(_) => people_input_handler(&input, &mut app),
-            FocusedWindow::OwnerSelector(_,_) => owner_selector_input_handler(&input, &mut app),
+            FocusedWindow::OwnerSelector(_,_,_) => owner_selector_input_handler(&input, &mut app),
             FocusedWindow::RestOwnerSelector(_) => rest_owner_selector_input_handler(&input, &mut app),
             FocusedWindow::AddPerson(_) => add_person_input_handler(&input, &mut app),
         };

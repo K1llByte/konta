@@ -7,26 +7,35 @@ pub struct AppState {
     pub data: Data,
 }
 
+
 pub enum FocusedWindow {
     Items(usize),
     People(usize),
-    OwnerSelector(usize,usize),
+    OwnerSelector(usize,usize,Vec<usize>),
     RestOwnerSelector(usize),
     AddPerson(String),
 }
+
 
 pub struct Data {
     pub items: Vec<Item>,
     pub people: Vec<String>,
 }
 
-#[derive(Clone)]
+
+pub struct Owner {
+    pub person: usize,
+    pub percentage: f32,
+}
+
+
 pub struct Item {
     pub description: String,
     pub quantity: u32,
     pub price: f32,
-    pub owner: Option<usize>,
+    pub owners: Vec<Owner>,
 }
+
 
 impl Default for AppState {
     fn default() -> Self {
@@ -34,42 +43,23 @@ impl Default for AppState {
             description: "Iogurte Grego Natural Açucarado".into(),
             quantity: 2,
             price: 2.48,
-            owner: None,
+            owners: Vec::new(),
         };
         let item2 = Item{
             description: "Iogurte Grego Natural Açucarado".into(),
             quantity: 1,
             price: 1.24,
-            owner: None,
+            owners: Vec::new(),
         };
         AppState{
             focused: FocusedWindow::Items(0),
             data: Data {
                 items: vec![
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
-                    item1.clone(),
-                    item2.clone(),
+                    item1,
+                    item2,
                 ],
                 people: vec![
-                    // "jojo".into(),
-                    // "bu".into(),
+                    "jojo".into(),
                 ]
             },
         }
@@ -86,14 +76,35 @@ impl AppState {
 }
 
 impl Data {
-    pub fn set_item_owner(&mut self, item_idx: usize, opt_person_idx: Option<usize>) {
-        self.items[item_idx].owner = opt_person_idx;
+    pub fn set_item_owner(&mut self, item_idx: usize, person_idx: usize) {
+        let owner = Owner{
+            person: person_idx,
+            percentage: 1.0,
+        };
+
+        let size = self.items[item_idx].owners.len();
+        // Special case to avoid reallocation
+        if size == 1 {
+            self.items[item_idx].owners[0] = owner;
+        }
+        else {
+            self.items[item_idx].owners = vec![owner];
+        }
     }
 
-    pub fn set_rest_items_owner(&mut self, opt_person_idx: Option<usize>) {
+    pub fn set_item_owners(&mut self, item_idx: usize, owners: Vec<Owner>) {
+        self.items[item_idx].owners = owners;
+    }
+
+    pub fn set_rest_items_owner(&mut self, person_idx: usize) {
         for item in &mut self.items {
-            if let None = item.owner {
-                item.owner = opt_person_idx;
+            if item.owners.is_empty() {
+                item.owners.push(
+                    Owner{
+                        person: person_idx,
+                        percentage: 1.0,
+                    }
+                )
             }
         }
     }
@@ -104,8 +115,8 @@ impl Data {
             totals.push(0f32);
         }
         for (i, item) in self.items.iter().enumerate() {
-            if let Some(owner_idx) = item.owner {
-                totals[owner_idx] += item.price
+            for owner in &item.owners {
+                totals[owner.person] += owner.percentage*item.price;
             }
         }
         totals
@@ -128,7 +139,7 @@ impl Data {
             description: String::from(""),
             quantity: 0,
             price: 0.0,
-            owner: None,
+            owners: Vec::new(),
         };
         for line in io::BufReader::new(file).lines() {
             let line = line.unwrap();
@@ -176,7 +187,7 @@ impl Data {
                                 description: String::from(""),
                                 quantity: 0,
                                 price: 0.0,
-                                owner: None,
+                                owners: Vec::new(),
                             }
                         }
                     }
@@ -192,11 +203,27 @@ impl Data {
     }
 }
 
-pub fn owner_to_string(owner: Option<usize>, app: &AppState) -> String {
-    match owner {
-        Some(idx) => app.data.people[idx].clone(),
-        None => "".into(),
+pub fn from_indices_to_owners(people: &Vec<usize>) -> Vec<Owner> {
+    let mut owners = Vec::with_capacity(people.len());
+    let percentage = 1f32 / (people.len() as f32);
+    for person in people {
+        owners.push(Owner{
+            person: *person,
+            percentage,
+        });
     }
+    owners
+}
+
+// [{"jojo",0.2}, {"jojo",0.2}, {"jojo",0.2}, {"jojo",0.2}, {"bu",0.2}]
+// turns into
+// [{"jojo",0.8}, {"bu",0.2}]
+pub fn flatten_owners(owners: Vec<Owner>) -> Vec<Owner> {
+    owners
+}
+
+pub fn owner_to_string(owner: &Owner, app: &AppState) -> String {
+    app.data.people[owner.person].clone()
 }
 
 use tui::style::Color;

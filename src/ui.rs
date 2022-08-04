@@ -12,7 +12,8 @@ use tui::{
         Color, Modifier, Style
     },
     text::{
-        Span
+        Spans,
+        Span,
     },
 };
 
@@ -52,7 +53,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         // Get row selected or not
         let row = match app.focused {
             // Selected
-            FocusedWindow::People(idx) | FocusedWindow::OwnerSelector(_,idx) if i == idx => 
+            FocusedWindow::People(idx) | FocusedWindow::OwnerSelector(_,idx,_) if i == idx => 
                 Row::new(vec![
                     Cell::from(person.as_ref()),
                     Cell::from(totals[i].to_string()),
@@ -73,7 +74,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
     let people_list = Table::new(people_rows)
         .block(
             match app.focused {
-                FocusedWindow::OwnerSelector(_,_) | FocusedWindow::People(_) =>
+                FocusedWindow::OwnerSelector(_,_,_) | FocusedWindow::People(_) =>
                     Block::default()
                         .borders(Borders::ALL)
                         .title("People")
@@ -92,60 +93,102 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
     let mut item_rows = Vec::with_capacity(app.data.items.len());
 
     for (i,item) in app.data.items.iter().enumerate() {
+        let owner_str = if item.owners.is_empty() {
+            "".into()
+        }
+        else {
+            owner_to_string(&item.owners[0], &app)
+        };
         // Get row selected or not
         let row = match app.focused {
             // Selected
-            FocusedWindow::Items(idx) if i == idx => 
+            FocusedWindow::Items(idx) if i == idx =>  {
                 Row::new(vec![
                         Cell::from(item.description.as_ref()),
                         Cell::from(item.quantity.to_string()),
                         Cell::from(item.price.to_string()),
-                        Cell::from(owner_to_string(item.owner, &app))
-                            .style(
-                                if let Some(person_idx) = item.owner {
-                                    Style::default().bg(person_color(person_idx)).fg(Color::White)
+                        Cell::from(
+                            Spans::from({
+                                let mut spans = Vec::with_capacity(item.owners.len());
+                                for owner in &item.owners {
+                                    spans.push(
+                                        Span::styled(
+                                            if owner.percentage == 1f32 {
+                                                format!(" {} ", app.data.people[owner.person])
+                                            }
+                                            else {
+                                                format!(" {} {:.2} ", app.data.people[owner.person], owner.percentage)
+                                            },
+                                            Style::default().bg(person_color(owner.person)).fg(Color::White)
+                                        )
+                                    );
+                                    
                                 }
-                                else {
-                                    Style::default()
-                                }
-                            ),
+                                spans
+                            })
+                        ),
                     ]
                 )
-                .style(Style::default().bg(Color::White).fg(Color::Black)),
+                .style(Style::default().bg(Color::White).fg(Color::Black))
+            },
             // Select respective owner
-            FocusedWindow::OwnerSelector(idx,_) if i == idx => 
+            FocusedWindow::OwnerSelector(idx,_,_) if i == idx => {
                 Row::new(vec![
                         Cell::from(item.description.as_ref()),
                         Cell::from(item.quantity.to_string()),
                         Cell::from(item.price.to_string()),
-                        Cell::from(owner_to_string(item.owner, &app))
-                            .style(
-                                if let Some(person_idx) = item.owner {
-                                    Style::default().bg(person_color(person_idx)).fg(Color::White)
+                        Cell::from(
+                            Spans::from({
+                                let mut spans = Vec::with_capacity(item.owners.len());
+                                for owner in &item.owners {
+                                    spans.push(
+                                        Span::styled(
+                                            if owner.percentage == 1f32 {
+                                                format!(" {} ", app.data.people[owner.person])
+                                            }
+                                            else {
+                                                format!(" {} {:.2} ", app.data.people[owner.person], owner.percentage)
+                                            },
+                                            Style::default().bg(person_color(owner.person)).fg(Color::White)
+                                        )
+                                    );
+                                    
                                 }
-                                else {
-                                    Style::default()
-                                }
-                            ),
+                                spans
+                            })
+                        ),
                     ]
                 )
-                .style(Style::default().bg(Color::LightYellow).fg(Color::Black)),
+                .style(Style::default().bg(Color::LightYellow).fg(Color::Black))
+            },
             // Normal
-            _ => Row::new(vec![
+            _ => {
+                Row::new(vec![
                     Cell::from(item.description.as_ref()),
                     Cell::from(item.quantity.to_string()),
                     Cell::from(item.price.to_string()),
-                    Cell::from(owner_to_string(item.owner, &app))
-                        .style(
-                            if let Some(person_idx) = item.owner {
-                                Style::default().bg(person_color(person_idx)).fg(Color::White)
+                    Cell::from(
+                        Spans::from({
+                            let mut spans = Vec::with_capacity(item.owners.len());
+                            for owner in &item.owners {
+                                spans.push(
+                                    Span::styled(
+                                        if owner.percentage == 1f32 {
+                                            format!(" {} ", app.data.people[owner.person])
+                                        }
+                                        else {
+                                            format!(" {} {:.2} ", app.data.people[owner.person], owner.percentage)
+                                        },
+                                        Style::default().bg(person_color(owner.person)).fg(Color::White)
+                                    )
+                                );
+                                
                             }
-                            else {
-                                Style::default()
-                            }
-                        ),
-                ]
-            ),
+                            spans
+                        })
+                    ),
+                ])
+            },
         };
         item_rows.push(row);
     }
@@ -187,9 +230,9 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
     )
     .widths(&[
         Constraint::Percentage(55),
+        Constraint::Percentage(10),
         Constraint::Percentage(15),
-        Constraint::Percentage(15),
-        Constraint::Percentage(15),
+        Constraint::Percentage(20),
     ]);
 
     /////////////// Render add person prompt ///////////////
@@ -220,7 +263,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
         FocusedWindow::Items(idx) => {
             items_state.select(Some(idx));
         },
-        FocusedWindow::OwnerSelector(item_idx, person_idx) => {
+        FocusedWindow::OwnerSelector(item_idx, person_idx,_) => {
             items_state.select(Some(item_idx));
             people_state.select(Some(person_idx));
         },
