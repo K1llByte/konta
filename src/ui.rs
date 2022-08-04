@@ -93,12 +93,6 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
     let mut item_rows = Vec::with_capacity(app.data.items.len());
 
     for (i,item) in app.data.items.iter().enumerate() {
-        let owner_str = if item.owners.is_empty() {
-            "".into()
-        }
-        else {
-            owner_to_string(&item.owners[0], &app)
-        };
         // Get row selected or not
         let row = match app.focused {
             // Selected

@@ -218,8 +218,16 @@ pub fn from_indices_to_owners(people: &Vec<usize>) -> Vec<Owner> {
 // [{"jojo",0.2}, {"jojo",0.2}, {"jojo",0.2}, {"jojo",0.2}, {"bu",0.2}]
 // turns into
 // [{"jojo",0.8}, {"bu",0.2}]
-pub fn flatten_owners(owners: Vec<Owner>) -> Vec<Owner> {
-    owners
+pub fn flatten_owners(owners: &mut Vec<Owner>) {
+    owners.dedup_by(|a, b| {
+        if a.person == b.person {
+            b.percentage += a.percentage;
+            true
+        }
+        else {
+            false
+        }
+    });
 }
 
 pub fn owner_to_string(owner: &Owner, app: &AppState) -> String {

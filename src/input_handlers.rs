@@ -98,7 +98,9 @@ pub fn owner_selector_input_handler(event: &Event, app: &mut AppState) -> bool {
                 KeyCode::Enter => {
                     if *person_idx < app.data.people.len() {
                         owners_indices.push(*person_idx);
-                        app.data.set_item_owners(*item_idx, from_indices_to_owners(&owners_indices));
+                        let mut owners = from_indices_to_owners(&owners_indices);
+                        flatten_owners(&mut owners);
+                        app.data.set_item_owners(*item_idx, owners);
                     }
                     app.focused = FocusedWindow::Items(*item_idx);
                 }
