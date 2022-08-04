@@ -2,11 +2,11 @@ use tui::{
     Frame,
     backend::Backend,
     layout::{
-        Constraint, Direction, Layout, Alignment
+        Constraint, Direction, Layout
     },
     widgets::{
         Block, Borders, Wrap, Paragraph,
-        Cell, Row, Table, TableState, BorderType, List, ListItem
+        Cell, Row, Table, TableState, BorderType,
     },
     style::{
         Color, Modifier, Style
@@ -112,6 +112,24 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &AppState) {
                     ]
                 )
                 .style(Style::default().bg(Color::White).fg(Color::Black)),
+            // Select respective owner
+            FocusedWindow::OwnerSelector(idx,_) if i == idx => 
+                Row::new(vec![
+                        Cell::from(item.description.as_ref()),
+                        Cell::from(item.quantity.to_string()),
+                        Cell::from(item.price.to_string()),
+                        Cell::from(owner_to_string(item.owner, &app))
+                            .style(
+                                if let Some(person_idx) = item.owner {
+                                    Style::default().bg(person_color(person_idx)).fg(Color::White)
+                                }
+                                else {
+                                    Style::default()
+                                }
+                            ),
+                    ]
+                )
+                .style(Style::default().bg(Color::LightYellow).fg(Color::Black)),
             // Normal
             _ => Row::new(vec![
                     Cell::from(item.description.as_ref()),

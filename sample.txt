@@ -1,0 +1,130 @@
+ Substituição #1
+
+    Creme de Cenoura
+    1
+    0,00 €
+    2,49 €
+
+    Creme de Legumes
+    1
+    0,00 €
+    2,49 € 
+
+Frigorífico
+
+    Iogurte Grego Natural Açucarado Pingo Doce - Pack 4
+    2
+    0,00 €
+    2,58 €
+
+    Queijo Flamengo Fatiado Terra Nostra
+    1
+    0,00 €
+    4,39 €
+
+    Tortellini Bolonhesa Rana
+    1
+    0,00 €
+    3,29 €
+
+    Ravioli de Frango Assado com Alecrim Rana
+    1
+    0,00 €
+    3,29 € 
+
+Leite, Ovos e Natas
+
+    Leite UHT Magro Bem Essencial Mimosa
+    12
+    0,00 €
+    9,24 € 
+
+Padaria e Pastelaria
+
+    Pão de Forma Branco Panrico
+    1
+    0,00 €
+    1,89 € 
+
+Frutas e Legumes
+
+    Banana Importada - Unidade 0.2 Kg
+    1.91 Kg
+    0,00 €
+    2,08 € 
+
+Mercearia
+
+    Atum Posta em Azeite Minerva
+    4
+    -4,40 €
+    4,36 € 
+
+As Nossas Marcas
+
+    Ovos de Solo Classe L Pingo Doce
+    1
+    0,00 €
+    2,39 €
+
+    Garrafão de Água Pingo Doce
+    3
+    0,00 €
+    2,25 €
+
+    Papel Higiénico Folha Dupla Ecolabel Pingo Doce - 32 rolos
+    1
+    0,00 €
+    5,99 €
+
+    Água Pingo Doce
+    2
+    0,00 €
+    0,50 € 
+
+Animais
+
+    Ração Húmida para Gato Sabor Salmão Gold Gourmet
+    1
+    0,00 €
+    0,75 € 
+
+Alternativas Alimentares
+
+    Iogurte Magro Pedaços Mirtilo Pingo Doce (min. 4)
+    4
+    0,00 €
+    1,44 € 
+
+Higiene e Beleza
+
+    Sabonete Sólido Nivea
+    1
+    0,00 €
+    0,99 € 
+
+Take Away
+
+    Sandes de Frango Good4Me
+    0
+    0,00 €
+    0,00 €
+
+    Sandes de Atum Good4Me
+    0
+    0,00 €
+    0,00 € 
+
+Bebidas
+
+    Água Pingo Doce
+    1
+    0,00 €
+    0,16 € 
+
+Embalamento
+
+    Saco de Plástico Reciclado 85%
+    5
+    0,00 €
+    0,50 € 
