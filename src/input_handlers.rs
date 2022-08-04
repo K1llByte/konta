@@ -118,12 +118,12 @@ pub fn add_person_input_handler(event: &Event, app: &mut AppState) -> bool {
                 KeyCode::Backspace => {
                     use substring::Substring;
                     if name.len() > 0 {
-                        if event.modifiers.contains(KeyModifiers::CONTROL) {
-                            name.clear();
-                        }
-                        else {
+                        // if event.modifiers.contains(KeyModifiers::CONTROL) {
+                        //     name.clear();
+                        // }
+                        // else {
                             *name = String::from(name.substring(0, name.len()-1))
-                        }
+                        // }
                     }
                 }
                 KeyCode::Enter => {
