@@ -96,11 +96,8 @@ impl Data {
     }
 
     pub fn compute_total(&self) -> Vec<f32> {
-        let mut totals = Vec::with_capacity(self.people.len());
-        for _ in 0..self.people.len() {
-            totals.push(0f32);
-        }
-        for (i, item) in self.items.iter().enumerate() {
+        let mut totals = vec![0f32; self.people.len()];
+        for item in &self.items {
             for owner in &item.owners {
                 totals[owner.person] += owner.percentage * item.price;
             }

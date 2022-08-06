@@ -12,7 +12,7 @@ use std::{
     thread,
     time::Duration,
     sync::mpsc,
-    time::{Instant},
+    time::Instant,
 };
 use tui::{
     backend::CrosstermBackend,
@@ -57,7 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             if last_tick.elapsed() >= tick_rate {
-                if let Ok(_) = tx.send(Event::Tick) {
+                if tx.send(Event::Tick).is_ok() {
                     last_tick = Instant::now();
                 }
             }
